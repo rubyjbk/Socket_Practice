@@ -8,13 +8,13 @@ import java.net.Socket;
 
 public class SocketServer extends java.lang.Thread{
 	
-	private static ServerSocket server;
+	private static ServerSocket listerner;
 	
 	private static int port=9876;
 	
 	public SocketServer() {
 		try{
-			server=new ServerSocket(port);
+			listerner=new ServerSocket(port);
 		}
 		catch(IOException e) {
 			System.out.println("IOException :" + e.toString());
@@ -23,45 +23,46 @@ public class SocketServer extends java.lang.Thread{
 	
 	public void run() {
 		while(true){
-			System.out.println("Waiting for the client request");
+			System.out.println("### Server Side: running and waiting for request");
 			
 			try {
-				Socket socket=server.accept();
+				Socket socket=listerner.accept();
 				
 				/*
 				 *  client -> server
 				 */
 				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 				String message = (String) ois.readObject();
-	            System.out.println("Message Received: " + message);
+	            System.out.println("### Server Side: Message Received: " + message);
 	            
 	            /*
 				 *  server -> client
 				 */
 	            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-	            oos.writeObject("Hi Client "+message);
+	            oos.writeObject("Respond from Server: "+message);
 	            
 	            ois.close();
 	            oos.close();
 	            socket.close();
 	            
 	            if(message.equalsIgnoreCase("shutdown")) {
-	            	System.out.println("Go to shutdown");
+	            	System.out.println("### Server Side: got the CMD shutdown from client");
 	            	break;
 	            }
 	            
 			}catch(IOException e) {
-				System.out.println("IOException :" + e.toString());
+				System.out.println("### Server Side: IOException :" + e.toString());
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
-		System.out.println("Shutting down Socket server!!");
+		
 		
 		try {
-			server.close();
+			System.out.println("### Server Side: close socketserver");
+			listerner.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

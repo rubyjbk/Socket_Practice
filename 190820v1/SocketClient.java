@@ -40,28 +40,30 @@ public class SocketClient {
 	            socket = new Socket(address, port);
 	            //write to socket using ObjectOutputStream
 	            oos = new ObjectOutputStream(socket.getOutputStream());
-	            System.out.println("Sending request to Socket Server");
+	            System.out.println("*** Client Side: sending request to server");
 	            if(i==routine-1) {
 	            	oos.writeObject("shutdown");
 	            }
 	            else {
 	            	oos.writeObject(""+i);
 	            }
+	            
+	            
 	            //read the server response message
 	            ois = new ObjectInputStream(socket.getInputStream());
 	            String message = (String) ois.readObject();
-	            System.out.println("Client got the respond Message: " + message);
+	            System.out.println("*** Client Side: got the respond message: " + message);
 	            //close resources
 	            ois.close();
 	            oos.close();
-	            Thread.sleep(100);
+	            socket.close();
+	            
+	            //Thread.sleep(100);
+	            
         	}
         	catch(IOException e) {
         		System.out.println("IOException :" + e.toString());
-        	} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
+        	} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -72,17 +74,27 @@ public class SocketClient {
 	public void function_shutdown() {
 		Socket socket = null;
         ObjectOutputStream oos = null;
-        //ObjectInputStream ois = null;
+        ObjectInputStream ois = null;
         
         try {
 	        socket = new Socket(address, port);
 	        //write to socket using ObjectOutputStream
 	        oos = new ObjectOutputStream(socket.getOutputStream());
-	        System.out.println("Sending request to Socket Server");
+	        System.out.println("*** Client Side: sending request to server");
 	        oos.writeObject("shutdown");
+	        
+	      //read the server response message
+            ois = new ObjectInputStream(socket.getInputStream());
+            String message = (String) ois.readObject();
+            System.out.println("*** Client Side: got the respond message: " + message);
+            //close resources
+            ois.close();
+	        
+	        oos.close();
+	        socket.close();
         }
         catch(Exception e) {
-        	System.out.println("Exception :" + e.toString());
+        	System.out.println("*** Client Side: Exception :" + e.toString());
         }
         
 	}

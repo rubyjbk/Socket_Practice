@@ -1,0 +1,21 @@
+java -jar <server.jar> 
+
+java -jar C:\Users\Kevin\Desktop\server.jar 
+
+java -jar <client.jar> [param_01] [param_02]
+
+java -jar C:\Users\Kevin\Desktop\client.jar 
+
+java -jar C:\Users\Kevin\Desktop\client.jar shutdown
+
+java -jar C:\Users\Kevin\Desktop\client.jar parseCSV F:\country.csv
+
+
+
+
+
+Other CMD:
+
+netstat -nao
+
+taskkill /f /PID <PID>

@@ -1,10 +1,12 @@
 package socket_0820_v1;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class SocketServer extends java.lang.Thread {
 
@@ -27,27 +29,26 @@ public class SocketServer extends java.lang.Thread {
 			try {
 				Socket socket = listerner.accept();
 
-				/*
-				 * client -> server
-				 */
 				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 				String message = (String) ois.readObject();
 				System.out.println("### Server Side: Message Received: " + message);
 
-				/*
-				 * server -> client
-				 */
 				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 				oos.writeObject("Respond from Server: " + message);
+
+				if (message.equalsIgnoreCase("shutdown")) {
+					System.out.println("### Server Side: got the CMD shutdown from client");
+					function_shutdown();
+					break;
+				} else if (message.equalsIgnoreCase("parseCSV")) {
+					System.out.println("### Server Side: got the CMD parseCSV from client");
+					function_parseCSV(socket);
+					break;
+				}
 
 				ois.close();
 				oos.close();
 				socket.close();
-
-				if (message.equalsIgnoreCase("shutdown")) {
-					System.out.println("### Server Side: got the CMD shutdown from client");
-					break;
-				}
 
 			} catch (IOException e) {
 				System.out.println("### Server Side: IOException :" + e.toString());
@@ -57,6 +58,9 @@ public class SocketServer extends java.lang.Thread {
 			}
 		}
 
+	}
+
+	public void function_shutdown() {
 		try {
 			System.out.println("### Server Side: close socketserver");
 			listerner.close();
@@ -64,6 +68,33 @@ public class SocketServer extends java.lang.Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	public void function_parseCSV(Socket socket) {
+
+		BufferedInputStream in;
+		try {
+			in = new BufferedInputStream(socket.getInputStream());
+			byte[] b = new byte[1024];
+			String data = "", cvsSplitBy = ",";
+			int length;
+			while ((length = in.read(b)) > 0) {
+				data += new String(b, 0, length);
+			}
+
+			Scanner scanner = new Scanner(data);
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String[] country = line.split(cvsSplitBy);
+				System.out.println("### Server Side: Country [code= " + country[4] + " , name=" + country[5] + "]");
+			}
+			scanner.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void main(String args[]) {
